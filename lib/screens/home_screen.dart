@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../widgets/xo_board.dart';
 import '../utils/cell_value.dart';
@@ -21,52 +22,80 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     boardController = BoardController();
     gameController = GameController(boardController);
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
   }
 
   @override
   void dispose() {
     boardController.dispose();
     gameController.dispose();
+    SystemChrome.restoreSystemUIOverlays();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            const Text('Click a cell when it\'s your move.'),
-            AnimatedBuilder(
-              animation: gameController,
-              builder: (context, _) {
-                if (gameController.hasWinner) {
-                  return Text(
-                    'Winner is ${mapCellValueToString(gameController.winner)}',
-                  );
-                } else {
-                  return Text(
-                    'Player ${gameController.isPlayerXTurn ? 'X' : 'O'}\'s turn.',
-                  );
-                }
-              },
-            ),
-            XOBoard(
-              controller: boardController,
-              onCellTap: gameController.onCellTap,
-            ),
-            ElevatedButton(
-              child: const Text('Restart Game'),
-              onPressed: () {
-                gameController.restartGame(randomPlayer: false);
-              },
-            ),
-          ],
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text(
+                'Click a cell when it\'s your move.',
+                style: TextStyle(fontSize: 18.0),
+              ),
+              AnimatedBuilder(
+                animation: gameController,
+                builder: (context, _) {
+                  if (gameController.hasWinner) {
+                    return Text(
+                      'Winner is ${mapCellValueToString(gameController.winner)}',
+                      style: const TextStyle(
+                        fontSize: 32.0,
+                        color: Colors.green,
+                      ),
+                    );
+                  } else {
+                    return Text(
+                      'Player ${gameController.currentPlayerString}\'s turn.',
+                      style: TextStyle(
+                        fontSize: 32.0,
+                        color: gameController.currentPlayerColor,
+                      ),
+                    );
+                  }
+                },
+              ),
+              XOBoard(
+                controller: boardController,
+                onCellTap: gameController.onCellTap,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  child: const Text(
+                    'RESTART GAME',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    gameController.restartGame(randomPlayer: false);
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

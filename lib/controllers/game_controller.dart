@@ -18,6 +18,10 @@ class GameController extends ChangeNotifier {
   bool get hasWinner => _winner != CellValue.empty;
   CellValue get winner => _winner;
 
+  CellValue get currentPlayer => _isPlayerXTurn ? CellValue.x : CellValue.o;
+  String get currentPlayerString => mapCellValueToString(currentPlayer);
+  Color get currentPlayerColor => mapCellValueToColor(currentPlayer);
+
   void randomStart() {
     _isPlayerXTurn = Random().nextBool();
     notifyListeners();
