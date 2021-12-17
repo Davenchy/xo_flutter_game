@@ -1,15 +1,33 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/cell.dart';
+import '../widgets/xo_board.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double cellWidth = screenWidth / 3;
+  State<HomeScreen> createState() => _HomeScreenState();
+}
 
+class _HomeScreenState extends State<HomeScreen> {
+  late final XOBoardController controller;
+  bool isPlayerXTurn = true;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = XOBoardController();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -17,28 +35,33 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            SizedBox(
-              height: cellWidth * 3,
-              child: GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: 2,
-                crossAxisSpacing: 2,
-                shrinkWrap: true,
-                children: [
-                  for (int i = 0; i < 9; i++)
-                    Cell(
-                      width: cellWidth,
-                      initialValue: i % 2 == 0 ? CellValue.x : CellValue.o,
-                      onPressed: (_) =>
-                          _ == CellValue.x ? CellValue.o : CellValue.x,
-                    ),
-                ],
-              ),
+            const Text('Click a cell when it\'s your move.'),
+            const Text('Player X\'s turn.'),
+            XOBoard(controller: controller, onCellTap: onCellTap),
+            ElevatedButton(
+              child: const Text('Restart Game'),
+              onPressed: controller.resetBoard,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void onCellTap(int index) {
+    final oldValue = controller.getCellValue(index);
+    if (oldValue != CellValue.empty) return;
+
+    late CellValue newValue;
+    if (isPlayerXTurn) {
+      newValue = CellValue.x;
+    } else {
+      newValue = CellValue.o;
+    }
+
+    isPlayerXTurn = !isPlayerXTurn;
+    controller.setCellValue(index, newValue);
   }
 }

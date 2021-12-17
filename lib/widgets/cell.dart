@@ -41,60 +41,37 @@ CellValue mapStringToCellValue(String value) {
   }
 }
 
-class Cell extends StatefulWidget {
+class Cell extends StatelessWidget {
   const Cell({
     Key? key,
-    this.initialValue,
     required this.width,
-    required this.onPressed,
+    required this.value,
   }) : super(key: key);
 
   final double width;
-  final CellValue? initialValue;
-  final CellValue? Function(CellValue lastValue) onPressed;
-
-  @override
-  State<Cell> createState() => _CellState();
-}
-
-class _CellState extends State<Cell> {
-  late CellValue _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.initialValue ?? CellValue.empty;
-  }
+  final CellValue value;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: GestureDetector(
-        onTap: () {
-          final newValue = widget.onPressed(_value);
-          if (newValue != null && newValue != _value) {
-            setState(() => _value = newValue);
-          }
-        },
-        child: Container(
-          width: widget.width,
-          padding: const EdgeInsets.all(16),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: mapCellValueToColor(_value),
-            border: Border.all(
-              color: Colors.black,
-              width: 2,
-            ),
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.all(16),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: mapCellValueToColor(value),
+          border: Border.all(
+            color: Colors.black,
+            width: 2,
           ),
-          child: Text(
-            mapCellValueToString(_value),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 32,
-            ),
+        ),
+        child: Text(
+          mapCellValueToString(value),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 32,
           ),
         ),
       ),
