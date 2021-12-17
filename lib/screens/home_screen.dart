@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/cell.dart';
 import '../widgets/xo_board.dart';
+import '../utils/cell_value.dart';
+import '../controllers/game_controller.dart';
+import '../controllers/board_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -11,18 +13,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late final XOBoardController controller;
-  bool isPlayerXTurn = true;
+  late final BoardController boardController;
+  late final GameController gameController;
 
   @override
   void initState() {
     super.initState();
-    controller = XOBoardController();
+    boardController = BoardController();
+    gameController = GameController(boardController);
   }
 
   @override
   void dispose() {
-    controller.dispose();
+    boardController.dispose();
+    gameController.dispose();
     super.dispose();
   }
 
@@ -38,30 +42,33 @@ class _HomeScreenState extends State<HomeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             const Text('Click a cell when it\'s your move.'),
-            const Text('Player X\'s turn.'),
-            XOBoard(controller: controller, onCellTap: onCellTap),
+            AnimatedBuilder(
+              animation: gameController,
+              builder: (context, _) {
+                if (gameController.hasWinner) {
+                  return Text(
+                    'Winner is ${mapCellValueToString(gameController.winner)}',
+                  );
+                } else {
+                  return Text(
+                    'Player ${gameController.isPlayerXTurn ? 'X' : 'O'}\'s turn.',
+                  );
+                }
+              },
+            ),
+            XOBoard(
+              controller: boardController,
+              onCellTap: gameController.onCellTap,
+            ),
             ElevatedButton(
               child: const Text('Restart Game'),
-              onPressed: controller.resetBoard,
+              onPressed: () {
+                gameController.restartGame(randomPlayer: false);
+              },
             ),
           ],
         ),
       ),
     );
-  }
-
-  void onCellTap(int index) {
-    final oldValue = controller.getCellValue(index);
-    if (oldValue != CellValue.empty) return;
-
-    late CellValue newValue;
-    if (isPlayerXTurn) {
-      newValue = CellValue.x;
-    } else {
-      newValue = CellValue.o;
-    }
-
-    isPlayerXTurn = !isPlayerXTurn;
-    controller.setCellValue(index, newValue);
   }
 }

@@ -1,8 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 import 'cell.dart';
+import '../controllers/board_controller.dart';
 
 class XOBoard extends StatelessWidget {
   const XOBoard({
@@ -11,7 +10,7 @@ class XOBoard extends StatelessWidget {
     required this.onCellTap,
   }) : super(key: key);
 
-  final XOBoardController controller;
+  final BoardController controller;
   final void Function(int index) onCellTap;
 
   @override
@@ -26,7 +25,7 @@ class XOBoard extends StatelessWidget {
               animation: controller,
               builder: (context, _) {
                 final board = controller.getBoard();
-                log('rebuild board: ${board[0]}');
+
                 return GridView.count(
                   crossAxisCount: 3,
                   mainAxisSpacing: 2,
@@ -47,26 +46,5 @@ class XOBoard extends StatelessWidget {
         );
       }),
     );
-  }
-}
-
-class XOBoardController extends ChangeNotifier {
-  final List<CellValue> _board = List<CellValue>.filled(9, CellValue.empty);
-
-  List<CellValue> getBoard() => List.unmodifiable(_board);
-
-  CellValue getCellValue(int index) => _board[index];
-
-  void setCellValue(int index, CellValue value) {
-    if (_board[index] == value) return;
-    _board[index] = value;
-    notifyListeners();
-  }
-
-  void resetBoard() {
-    for (int i = 0; i < _board.length; i++) {
-      _board[i] = CellValue.empty;
-    }
-    notifyListeners();
   }
 }
