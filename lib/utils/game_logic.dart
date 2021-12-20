@@ -21,6 +21,8 @@ CellValue checkWinner(List<CellValue> board) {
     if (isRepeated) return board[rule[0]];
   }
 
+  if (board.every((c) => c != CellValue.empty)) return CellValue.draw;
+
   return CellValue.empty;
 }
 
@@ -41,6 +43,55 @@ bool isItemsRepeated<T>(Iterable<T> list) {
   return true;
 }
 
-// int ai_think(List<CellValue> board) {
-//   return 0;
-// }
+int getAiMove(
+  List<CellValue> board,
+  CellValue winPlayer,
+  CellValue lossPlayer,
+) {
+  int bestScore = 0;
+  int bestMove = -1;
+
+  for (int i = 0; i < board.length; i++) {
+    if (board[i] != CellValue.empty) continue;
+
+    final List<CellValue> newBoard = List.from(board);
+    newBoard[i] = winPlayer;
+
+    final score = minMaxAi(newBoard, winPlayer, lossPlayer, false);
+
+    if (bestMove == -1 || score > bestScore) {
+      bestScore = score;
+      bestMove = i;
+    }
+  }
+
+  return bestMove;
+}
+
+int minMaxAi(
+  List<CellValue> board,
+  CellValue winPlayer,
+  CellValue lossPlayer,
+  bool isMin,
+) {
+  for (int i = 0; i < board.length; i++) {
+    if (board[i] != CellValue.empty) continue;
+
+    final List<CellValue> newBoard = List.from(board);
+    newBoard[i] = isMin ? lossPlayer : winPlayer;
+
+    final CellValue winner = checkWinner(newBoard);
+
+    if (winner == winPlayer) {
+      return 10;
+    } else if (winner == lossPlayer) {
+      return -10;
+    } else if (winner == CellValue.draw) {
+      return 0;
+    } else {
+      return minMaxAi(newBoard, winPlayer, lossPlayer, !isMin);
+    }
+  }
+
+  return 0;
+}

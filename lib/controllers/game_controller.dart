@@ -7,10 +7,14 @@ import '../utils/cell_value.dart';
 import '../utils/game_logic.dart' as GameLogic;
 
 class GameController extends ChangeNotifier {
-  GameController(this.boardController) {
+  GameController({
+    required this.boardController,
+    this.aiAutoPlay = CellValue.empty,
+  }) {
     randomStart();
   }
 
+  CellValue aiAutoPlay;
   bool _isPlaying = true;
   BoardController boardController;
   bool _isPlayerXTurn = true;
@@ -18,6 +22,7 @@ class GameController extends ChangeNotifier {
 
   bool get isPlayerXTurn => _isPlayerXTurn;
   bool get hasWinner => _winner != CellValue.empty;
+  bool get isDraw => _winner == CellValue.draw;
   CellValue get winner => _winner;
   bool get isPlaying => _isPlaying;
 
@@ -28,6 +33,7 @@ class GameController extends ChangeNotifier {
   void randomStart() {
     _isPlayerXTurn = Random().nextBool();
     notifyListeners();
+    if (aiAutoPlay == currentPlayer) aiPlay();
   }
 
   void changeTurn() {
@@ -65,6 +71,7 @@ class GameController extends ChangeNotifier {
 
   void onCellTap(int index) {
     if (!_isPlaying) return;
+    if (currentPlayer == aiAutoPlay) return;
 
     final oldValue = boardController.getCellValue(index);
     if (oldValue != CellValue.empty) return;
@@ -80,14 +87,33 @@ class GameController extends ChangeNotifier {
     boardController.setCellValue(index, newValue);
 
     checkWinner();
+
+    if (aiAutoPlay == currentPlayer) aiPlay();
   }
 
   void checkWinner() {
     final winner = GameLogic.checkWinner(boardController.getBoard());
-    if (winner != CellValue.empty) {
+    if (winner == CellValue.draw) {
+      _winner = CellValue.draw;
+      _isPlaying = false;
+    } else if (winner != CellValue.empty) {
       _winner = winner;
       _isPlaying = false;
       notifyListeners();
     }
+  }
+
+  void aiPlay() {
+    if (hasWinner) return;
+
+    final aiMove = GameLogic.getAiMove(
+      boardController.getBoard(),
+      currentPlayer,
+      currentPlayer == CellValue.x ? CellValue.o : CellValue.x,
+    );
+
+    boardController.setCellValue(aiMove, currentPlayer);
+    changeTurn();
+    checkWinner();
   }
 }

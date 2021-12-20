@@ -21,7 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     boardController = BoardController();
-    gameController = GameController(boardController);
+    gameController = GameController(
+      boardController: boardController,
+    );
 
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -55,7 +57,15 @@ class _HomeScreenState extends State<HomeScreen> {
               AnimatedBuilder(
                 animation: gameController,
                 builder: (context, _) {
-                  if (gameController.hasWinner) {
+                  if (gameController.isDraw) {
+                    return const Text(
+                      'Draw!',
+                      style: TextStyle(
+                        fontSize: 32.0,
+                        color: Colors.orange,
+                      ),
+                    );
+                  } else if (gameController.hasWinner) {
                     return Text(
                       'Winner is ${mapCellValueToString(gameController.winner)}',
                       style: const TextStyle(
@@ -77,6 +87,22 @@ class _HomeScreenState extends State<HomeScreen> {
               XOBoard(
                 controller: boardController,
                 onCellTap: gameController.onCellTap,
+              ),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  child: const Text(
+                    'AI Play',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    gameController.aiPlay();
+                  },
+                ),
               ),
               SizedBox(
                 width: double.infinity,

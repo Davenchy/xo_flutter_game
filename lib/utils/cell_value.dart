@@ -4,12 +4,15 @@ enum CellValue {
   empty,
   x,
   o,
+  draw,
 }
 
 String mapCellValueToString(CellValue value) {
   switch (value) {
     case CellValue.empty:
-      return '';
+      return 'Empty';
+    case CellValue.draw:
+      return 'Draw';
     case CellValue.x:
       return 'X';
     case CellValue.o:
@@ -21,6 +24,8 @@ Color mapCellValueToColor(CellValue value) {
   switch (value) {
     case CellValue.empty:
       return Colors.white;
+    case CellValue.draw:
+      return Colors.white;
     case CellValue.x:
       return Colors.red;
     case CellValue.o:
@@ -30,8 +35,10 @@ Color mapCellValueToColor(CellValue value) {
 
 CellValue mapStringToCellValue(String value) {
   switch (value) {
-    case '':
+    case 'Empty':
       return CellValue.empty;
+    case 'Draw':
+      return CellValue.draw;
     case 'X':
       return CellValue.x;
     case 'O':
