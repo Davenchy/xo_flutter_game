@@ -6,8 +6,8 @@
 
 - [x] Create UI
 
-- [ ] Add Game Logic
+- [x] Add Game Logic
 
-- [ ] Add AI Logic
+- [x] Add AI Logic
 
 - [ ] Add Screenshots
