@@ -1,13 +1,12 @@
 # XO Flutter Game
 
+## Screenshots
 
+<img src="screenshots/screenshot1.png" alt="simple xo game play" height=400 />
 
-## TODO
+- simple game play
 
-- [x] Create UI
+<img src="screenshots/screenshot2.png" alt="after ai make choice" height=400 />
 
-- [x] Add Game Logic
+- after ai make it's choice
 
-- [x] Add AI Logic
-
-- [ ] Add Screenshots
