@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 
 import 'board_controller.dart';
 import '../utils/cell_value.dart';
+import '../utils/game_logic.dart' as GameLogic;
 
 class GameController extends ChangeNotifier {
   GameController(this.boardController) {
     randomStart();
   }
 
+  bool _isPlaying = true;
   BoardController boardController;
   bool _isPlayerXTurn = true;
   CellValue _winner = CellValue.empty;
@@ -17,6 +19,7 @@ class GameController extends ChangeNotifier {
   bool get isPlayerXTurn => _isPlayerXTurn;
   bool get hasWinner => _winner != CellValue.empty;
   CellValue get winner => _winner;
+  bool get isPlaying => _isPlaying;
 
   CellValue get currentPlayer => _isPlayerXTurn ? CellValue.x : CellValue.o;
   String get currentPlayerString => mapCellValueToString(currentPlayer);
@@ -55,11 +58,14 @@ class GameController extends ChangeNotifier {
     }
 
     _winner = CellValue.empty;
+    _isPlaying = true;
     boardController.resetBoard();
     notifyListeners();
   }
 
   void onCellTap(int index) {
+    if (!_isPlaying) return;
+
     final oldValue = boardController.getCellValue(index);
     if (oldValue != CellValue.empty) return;
 
@@ -72,9 +78,16 @@ class GameController extends ChangeNotifier {
 
     changeTurn();
     boardController.setCellValue(index, newValue);
+
+    checkWinner();
   }
 
   void checkWinner() {
-    // TODO: add game logic
+    final winner = GameLogic.checkWinner(boardController.getBoard());
+    if (winner != CellValue.empty) {
+      _winner = winner;
+      _isPlaying = false;
+      notifyListeners();
+    }
   }
 }
