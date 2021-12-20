@@ -8,5 +8,5 @@
 
 <img src="screenshots/screenshot2.png" alt="after ai make choice" height=400 />
 
-- after ai make it's choice
+- after ai it's choice
 
