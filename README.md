@@ -6,7 +6,7 @@
 
 - simple game play
 
-<img src="screenshots/screenshot2.png" alt="after ai make choice" height=400 />
+<img src="screenshots/screenshot2.png" alt="after ai choice" height=400 />
 
-- after ai it's choice
+- after ai choice
 
